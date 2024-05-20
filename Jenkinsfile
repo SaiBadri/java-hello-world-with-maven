@@ -23,23 +23,22 @@ pipeline {
 
         stage('Build JAR') {
             steps {
-                // Assuming you have a build tool like Maven or Gradle to build the JAR file
                 sh 'mvn clean package'
             }
         }
 
-        stage('Push JAR to GitHub') {
-            steps {
-                script {
-                    // Commit and push the JAR file to the GitHub repository
-                    sh """
-                        git add ${JAR_FILE}
-                        git commit -m 'Add JAR file'
-                        git push origin ${BRANCH}
-                    """
-                }
-            }
-        }
+        // stage('Push JAR to GitHub') {
+        //     steps {
+        //         script {
+        //             // Commit and push the JAR file to the GitHub repository
+        //             sh """
+        //                 git add ${JAR_FILE}
+        //                 git commit -m 'Add JAR file'
+        //                 git push origin ${BRANCH}
+        //             """
+        //         }
+        //     }
+        // }
 
         stage('Deploy to GCP VM') {
             steps {
