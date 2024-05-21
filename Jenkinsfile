@@ -1,21 +1,28 @@
-pipeline{
+pipeline {
     agent any
-
+    
     tools {
-         maven 'maven'
-         jdk 'java'
-    }
+             maven 'maven'
+             jdk 'java'
+        }
+        
+    stages {
+        stage('Git Checkout') {
+            steps {
+                git branch: 'sample-dev', credentialsId: 'github-credentials', url: 'https://github.com/SaiBadri/java-hello-world-with-maven.git'
+            }
+        }
+        stage('Maven Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
 
-    stages{
-        stage('checkout'){
-            steps{
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'github access', url: 'https://github.com/sreenivas449/java-hello-world-with-maven.git']]])
+        stage('ssh to GCP VM') {
+            steps {
+                sshPublisher(publishers: [sshPublisherDesc(configName: 'tomcat-server01', transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: '', execTimeout: 120000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '/', remoteDirectorySDF: false, removePrefix: '/target', sourceFiles: '**/*.jar')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)])
             }
         }
-        stage('build'){
-            steps{
-               bat 'mvn package'
-            }
-        }
+
     }
 }
